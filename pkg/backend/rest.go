@@ -81,44 +81,62 @@ func deleteChannel(w http.ResponseWriter, r *http.Request) {
 }
 
 func uploadFile(w http.ResponseWriter, r *http.Request) {
-  addCorsHeader(w)
-	var n, fsize int
-	m, p, _ := mime.ParseMediaType(r.Header.Get("Content-Type"))
-	logging.Log.Debug(m)
-	boundary := p["boundary"]
-	reader := multipart.NewReader(r.Body, boundary)
-	buff := make([]byte, 1024)
-	for {
-		part, err := reader.NextPart()
-		if err == io.EOF {
-			// Done reading body
-			break
-		}
-		contentType := part.Header.Get("Content-Type")
-		logging.Log.Debug(contentType)
-		fname := part.FileName()
-		logging.Log.Debug("Filename %s", fname)
-		logging.Log.Debug("Open file")
-		f, err := os.OpenFile(fname, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	logging.Log.Debug("Upload file (", r.Method, ")")
+
+	switch r.Method {
+	case "POST":
+		channelID, err := strconv.Atoi(r.URL.Query().Get("channel"))
 		if err != nil {
-			panic(err)
+			w.WriteHeader(http.StatusNotAcceptable)
+			return
 		}
-		defer f.Close()
+    tChan := storage.FindChannelById(channelID)
+    if _, err := os.Stat("./content/"+tChan.BaseName); os.IsNotExist(err) {
+      // folder does not exist, create it
+      os.MkdirAll("./content/" + tChan.BaseName, os.ModePerm)
+    }
+    logging.Log.Debug("Upload file folder name ", tChan.BaseName)
+		addCorsHeader(w)
+		var n, fsize int
+		m, p, _ := mime.ParseMediaType(r.Header.Get("Content-Type"))
+		logging.Log.Debug(m)
+		boundary := p["boundary"]
+		reader := multipart.NewReader(r.Body, boundary)
+		buff := make([]byte, 1024)
 		for {
-			_, err = part.Read(buff)
+			part, err := reader.NextPart()
 			if err == io.EOF {
+				// Done reading body
 				break
 			}
-			if err != nil {
-				logging.Log.Fatal(err)
-			}
-			n, err = f.Write(buff)
-			fsize += n
+			contentType := part.Header.Get("Content-Type")
+			logging.Log.Debug(contentType)
+			fname := "./content/" + tChan.BaseName + "/" + part.FileName()
+			logging.Log.Debug("Filename %s", fname)
+			logging.Log.Debug("Open file")
+			f, err := os.OpenFile(fname, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
 			if err != nil {
 				panic(err)
 			}
+			defer f.Close()
+			for {
+				_, err = part.Read(buff)
+				if err == io.EOF {
+					break
+				}
+				if err != nil {
+					logging.Log.Fatal(err)
+				}
+				n, err = f.Write(buff)
+				fsize += n
+				if err != nil {
+					panic(err)
+				}
+			}
+			logging.Log.Debug("wrote ", fsize, " bytes")
 		}
-		logging.Log.Debug("wrote ", fsize, " bytes")
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
 }
 
