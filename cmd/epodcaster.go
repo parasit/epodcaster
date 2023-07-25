@@ -1,6 +1,7 @@
 package main
 
 import (
+  "flag"
 	"fmt"
 	"os"
 	"text/template"
@@ -17,13 +18,21 @@ const (
 )
 
 func main() {
-	fmt.Println("✓ Hello, 世界")
+  var fileName string
 	//	c := channel.Channel{"Cośtam", "Ja", "Blabla", "pl-PL", base_link, []channel.Episode{
 	//		{"Ep1", "Bla", time.Now(), "Bla", 1023},
 	//	}}
+  //flag.StringVar(&fileName,"filename","", "Input file name")
+
+  flag.Parse()
+  fileName = flag.Arg(0)
+  if fileName == "" {
+    fmt.Println("No input file name provided")
+    os.Exit(1)
+  }
 	logging.InitLogs()
 	c := models.Channel{}
-	c.LoadFromFile("forta.json")
+	c.LoadFromFile(fileName)
 	fmt.Println("ePodcaster v." + version)
 	fmt.Println(c)
 	//c := storage.FindChannelById(1)
