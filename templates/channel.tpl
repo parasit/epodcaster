@@ -15,6 +15,7 @@
       <pubDate>{{ .PubDate.Format  "Mon, 02 Jan 2006 15:04:06 -0700" }}</pubDate>
       <enclosure url="{{ .Link }}"
                  type="audio/mpeg" length="{{ .Length }}"/>
+      <guid>{{ .Link }}</guid>
 </item>
 {{ end }}
 {{ end }}
