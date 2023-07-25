@@ -1,0 +1,13 @@
+{
+  "id": 1,
+  "name": "Vox Machina",
+  "description": "Vox machina episodes",
+  "author": "Vox Machina team",
+  "language": "pl-PL",
+  "link": "http://parasit.ddns.net/epodcaster/vm",
+  "base_name": "vm",
+  "start_episode": 0,
+  "start_date": "2020-11-30T14:20:28.000+01:00",
+  "date_interval": 180, 
+  "episodes": []
+}

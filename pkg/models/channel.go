@@ -15,6 +15,7 @@ type Channel struct {
 	Description  string    `json:"description"`
 	Language     string    `json:"language"`
 	Link         string    `json:"link"`
+  Cover        string    `json:"cover"`
 	BaseName     string    `json:"base_name"`
 	StartEpisode int       `json:"start_episode"`
 	StartDate    time.Time `json:"start_date"`

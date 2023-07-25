@@ -4,7 +4,7 @@
   <title>{{.Name }}</title>
     <itunes:author>{{ .Author }}</itunes:author>
   <description>{{ .Description }}</description>
-    <itunes:image href="https://www.example.com/podcasts/dafnas-zebras/img/dafna-zebra-pod-logo.jpg"/>
+    <itunes:image href="{{ .Cover }}"/>
   <language>{{ .Language }}</language>
   <link>{{ .Link }}</link>
 {{with .Episodes }}
